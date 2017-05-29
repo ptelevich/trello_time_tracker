@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Trello Track Board</title>
+    <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+    <script src="https://api.trello.com/1/client.js?key=4750260007210082bd12c32527e76008"></script>
+    <script src="/js/knockout-3.4.2.js"></script>
+    <style>
+        #content .block {
+            display: inline-table;
+        }
+        .forBlock {
+            max-height: 500px;
+            overflow: auto;
+        }
+        .forBlock, .forBlock div {
+            padding: 5px;
+            border: 1px black dotted;
+        }
+        .forBlock .name {
+            color: deepskyblue;
+            cursor: pointer;
+        }
+        .forBlock .name:hover {
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <div id="content">
+        <!-- ko with: mainContent -->
+        <div class="block">
+            <label>Boards:</label>
+            <div data-bind="foreach: boards" class="forBlock">
+                <div class="name arrow" data-bind="text: name, click: $parent.showLists.bind($data)"></div>
+            </div>
+        </div>
+        <div class="block" data-bind="visible: lists().length">
+            <label>Lists:</label>
+            <div data-bind="foreach: lists" class="forBlock">
+                <div class="name" data-bind="text: name, click: $parent.showCards.bind($data)"></div>
+            </div>
+        </div>
+        <div class="block" data-bind="visible: cards().length">
+            <label>Cards:</label>
+            <div data-bind="foreach: cards" class="forBlock">
+                <div class="name" data-bind="text: name"></div>
+            </div>
+        </div>
+        <!-- /ko -->
+    </div>
+    <script src="/js/main.js"></script>
+</body>
+</html>
