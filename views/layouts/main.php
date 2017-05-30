@@ -10,6 +10,7 @@ use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
 
 $assets = AppAsset::register($this);
+$assets->js[] = '/js/custom_fn.js';
 $assets->js[] = '/js/main.js';
 $assets->css[] = '/css/project.css';
 ?>

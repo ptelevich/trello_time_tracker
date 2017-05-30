@@ -28,9 +28,9 @@ $config = [
     'controllerMap' => [
         'migrate-app' => [
             'class' => 'yii\console\controllers\MigrateController',
-            'migrationNamespaces' => ['app\migrations'],
-            'migrationTable' => 'migration_app',
-            'migrationPath' => null,
+            //'migrationNamespaces' => ['app\migrations'],
+            'migrationPath' => 'migrations',
+            'migrationTable' => '{{%migration_app}}',
         ],
         // Migrations for the specific extension
         'migrate-rbac' => [

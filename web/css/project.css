@@ -1,18 +1,24 @@
 #connectContent .block {
     display: inline-table;
+    width: 100%;
+    max-width: 300px;
 }
 .forBlock {
-    max-height: 500px;
+    max-height: 800px;
     overflow: auto;
 }
 .forBlock, .forBlock div {
     padding: 5px;
     border: 1px black dotted;
 }
-.forBlock .name {
+.forBlock .link {
     color: deepskyblue;
     cursor: pointer;
 }
-.forBlock .name:hover {
+.forBlock link:hover {
     color: blue;
+}
+
+.forBlock .link.selected {
+    background-color: rebeccapurple;
 }
