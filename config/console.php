@@ -21,6 +21,29 @@ $config = [
             ],
         ],
         'db' => $db,
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
+        ],
+    ],
+    'controllerMap' => [
+        'migrate-app' => [
+            'class' => 'yii\console\controllers\MigrateController',
+            'migrationNamespaces' => ['app\migrations'],
+            'migrationTable' => 'migration_app',
+            'migrationPath' => null,
+        ],
+        // Migrations for the specific extension
+        'migrate-rbac' => [
+            'class' => 'yii\console\controllers\MigrateController',
+            'migrationPath' => '@yii/rbac/migrations',
+            'migrationTable' => 'migration_rbac',
+        ],
+        // Migrations for the specific extension
+        'migrate-dektrium' => [
+            'class' => 'yii\console\controllers\MigrateController',
+            'migrationPath' => '@vendor/dektrium/yii2-user/migrations',
+            'migrationTable' => 'migration_dektrium',
+        ],
     ],
     'params' => $params,
     /*

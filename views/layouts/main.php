@@ -9,7 +9,9 @@ use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
 
-AppAsset::register($this);
+$assets = AppAsset::register($this);
+$assets->js[] = '/js/main.js';
+$assets->css[] = '/css/project.css';
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -19,6 +21,9 @@ AppAsset::register($this);
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?= Html::csrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
+    <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+    <script src="https://api.trello.com/1/client.js?key=4750260007210082bd12c32527e76008"></script>
+    <script src="/js/knockout-3.4.2.js"></script>
     <?php $this->head() ?>
 </head>
 <body>

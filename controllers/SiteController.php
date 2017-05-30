@@ -26,6 +26,11 @@ class SiteController extends Controller
                         'allow' => true,
                         'roles' => ['@'],
                     ],
+                    [
+                        'actions' => ['connect'],
+                        'allow' => true,
+                        'roles' => ['*'],
+                    ],
                 ],
             ],
             'verbs' => [
@@ -121,5 +126,10 @@ class SiteController extends Controller
     public function actionAbout()
     {
         return $this->render('about');
+    }
+
+    public function actionConnect()
+    {
+        return $this->render('connect');
     }
 }

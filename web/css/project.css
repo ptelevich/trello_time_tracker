@@ -1,0 +1,18 @@
+#connectContent .block {
+    display: inline-table;
+}
+.forBlock {
+    max-height: 500px;
+    overflow: auto;
+}
+.forBlock, .forBlock div {
+    padding: 5px;
+    border: 1px black dotted;
+}
+.forBlock .name {
+    color: deepskyblue;
+    cursor: pointer;
+}
+.forBlock .name:hover {
+    color: blue;
+}
