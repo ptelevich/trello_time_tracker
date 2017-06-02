@@ -24,7 +24,9 @@ var koContent = function()
             name: 'Getting Started Application',
             scope: {
                 read: 'true',
-                write: 'true' },
+                write: 'true',
+                comments: 'true'
+            },
             expiration: 'never',
             key: '4750260007210082bd12c32527e76008',
             return_url: 'http://trello.personal.loc/connect.html',
@@ -43,6 +45,12 @@ var koContent = function()
             };
 
             Trello.get('/member/me/boards', success, error);
+
+            Trello.get('/cards/5883593e269689bc677d5902/actions', {
+                filter : 'commentCard',
+
+            });
+            //Trello.post('/cards/5883593e269689bc677d5902/actions/comments', {text: '@trello_tracker comment1'});
         }
     }();
 
@@ -100,8 +108,18 @@ var koContent = function()
 
     public.saveTime = function(id)
     {
-        private.sendAjaxRequest('PUT', function(data){}, '/tracker/save-time', {id: id, time: public.changedTime()});
+        var putData = {boardId: public.boardId(), listId: public.listId(), cardId: id, time: public.changedTime()};
+        private.sendAjaxRequest('PUT', function(data){}, '/tracker/save-time', putData);
     };
+
+    private.getHash = function()
+    {
+        var hashes = window.location.hash;
+        private.sendAjaxRequest('PUT', function(data){}, '/tracker/save-token', {
+
+        });
+        $.post(hashes.replace('#token=',''));
+    }
 };
 
 var generalModel = {

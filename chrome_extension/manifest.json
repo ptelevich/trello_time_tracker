@@ -1,0 +1,30 @@
+{
+  "manifest_version": 2,
+
+  "name": "Tracker_trello",
+  "description": "This extension shows a Google Image search result for the current page",
+  "version": "0.0.1",
+  "author": "Pavel Televich",
+
+  "content_scripts": [ {
+    "js": [
+      "js/jquery-1.11.3.min.js",
+      "js/trello_tracker.js"
+    ],
+    "matches": [ "https://trello.com/*", "https://api.trello.com/*" ]
+  } ],
+
+  "browser_action": {
+    "default_icon": "browser_action_icons/64x64.png",
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "activeTab",
+    "browsingData",
+    "tabs",
+    "http://*/*",
+    "https://*/*",
+    "cookies",
+    "webRequest"
+  ]
+}

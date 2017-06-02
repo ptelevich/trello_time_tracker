@@ -8,6 +8,8 @@ class m170530_160820_add_track_table extends Migration
     {
         $this->createTable('{{%track_time}}', [
             'id' => $this->primaryKey(11)->notNull(),
+            'board_id' => $this->string(32)->notNull(),
+            'list_id' => $this->string(32)->notNull(),
             'card_id' => $this->string(32)->notNull(),
             'time' => $this->string(32)->null(),
             'created_at' => $this->dateTime(),

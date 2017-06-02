@@ -42,7 +42,7 @@ $this->title = 'Trello Track Board';
                                 'value: $parent.changedTime',
                             ]);
                         ?>
-                        <input type="text" width="4" placeholder="Add time" data-bind="<?= $bind ?>" />
+                        <input type="text" width="4" placeholder="Add time" data-bind="<?= $bind ?>" /> (1h30m)
                         <input type="button" value="Save" data-bind="click: $parent.saveTime.bind($data, id)"/>
                     </span>
                 </p>

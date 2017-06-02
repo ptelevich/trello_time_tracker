@@ -3,6 +3,9 @@
 namespace app\controllers;
 
 use app\models\TrackTime;
+use Codeception\Lib\Connector\Guzzle;
+use Trello\Client;
+use Trello\Manager;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -20,7 +23,7 @@ class TrackerController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['save-time'],
+                        'actions' => ['save-time','save-token'],
                         'allow' => true,
                         'roles' => ['?','@'],
                         'verbs' => ['PUT'],
@@ -30,6 +33,10 @@ class TrackerController extends Controller
                         'allow' => true,
                         'roles' => ['?','@'],
                         'verbs' => ['POST'],
+                    ],
+                    [
+                        'actions' => ['trello-api', 'auth-trello'],
+                        'allow' => true,
                     ]
                 ],
             ],
@@ -55,15 +62,32 @@ class TrackerController extends Controller
         ];
     }
 
+    public function actionAuthTrello()
+    {
+        var_dump($_SERVER);
+        echo parse_url("http://foo?bar#fizzbuzz",PHP_URL_FRAGMENT);
+        exit;
+        return $this->render('auth');
+    }
+
     public function actionSaveTime()
     {
-        $cardId = Yii::$app->request->post('id');
+        $boardId = Yii::$app->request->post('boardId');
+        $listId = Yii::$app->request->post('listId');
+        $cardId = Yii::$app->request->post('cardId');
         $time = Yii::$app->request->post('time');
 
-        $model = TrackTime::find()->where(['card_id' => $cardId])->one();
+        $model = TrackTime::find()->where([
+            'board_id' => $boardId,
+            'list_id' => $listId,
+            'card_id' => $cardId
+        ])->one();
+
         if (!$model) {
             $model = new TrackTime();
         }
+        $model->board_id = $boardId;
+        $model->list_id = $listId;
         $model->card_id = $cardId;
         $model->time = $time;
 
