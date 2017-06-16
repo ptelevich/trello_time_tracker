@@ -1,5 +1,7 @@
 <script>
     var hashes = window.location.hash;
-    $.post(hashes.replace('#token=',''));
-    //window.close();
+    var token_hash = hashes.replace('#token=','')
+    $.post('/tracker/auth-trello', {token: token_hash},  function(){
+        window.close();
+    });
 </script>

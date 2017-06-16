@@ -3,9 +3,7 @@
 namespace app\controllers;
 
 use app\models\TrackTime;
-use Codeception\Lib\Connector\Guzzle;
 use Trello\Client;
-use Trello\Manager;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -62,12 +60,34 @@ class TrackerController extends Controller
         ];
     }
 
+    public function beforeAction($action) {
+        $excepts = [
+            'auth-trello'
+        ];
+        if(in_array($action->id, $excepts)) {
+            Yii::$app->request->enableCsrfValidation = false;
+        }
+        return parent::beforeAction($action);
+    }
+
     public function actionAuthTrello()
     {
-        var_dump($_SERVER);
-        echo parse_url("http://foo?bar#fizzbuzz",PHP_URL_FRAGMENT);
-        exit;
-        return $this->render('auth');
+        $token = Yii::$app->request->post('token', null);
+
+        if (!Yii::$app->request->isAjax && !$token) {
+            return $this->render('auth');
+        }
+
+        $client = new Client();
+        $client->authenticate(Yii::$app->params['trello_api_key'], $token, Client::AUTH_URL_CLIENT_ID);
+
+        $member = $client->api('token')->getMember($token);
+
+        if (isset($member['id'])) {
+            file_put_contents(Yii::$app->runtimePath.'/tokens.log', $member['id'] . ' - ' . $token . "\r\n", FILE_APPEND);
+        }
+
+        Yii::$app->end();
     }
 
     public function actionSaveTime()
