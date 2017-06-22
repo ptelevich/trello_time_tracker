@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\MemberToken;
 use app\models\TrackTime;
 use Trello\Client;
 use Yii;
@@ -84,6 +85,11 @@ class TrackerController extends Controller
         $member = $client->api('token')->getMember($token);
 
         if (isset($member['id'])) {
+
+            $model = new MemberToken();
+            $model->member_id = $member['id'];
+            $model->token = $token;
+            $model->save();
             file_put_contents(Yii::$app->runtimePath.'/tokens.log', $member['id'] . ' - ' . $token . "\r\n", FILE_APPEND);
         }
 

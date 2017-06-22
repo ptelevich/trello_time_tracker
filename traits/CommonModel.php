@@ -6,7 +6,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
 
-trait TrackerModel
+trait CommonModel
 {
     public function behaviors()
     {
