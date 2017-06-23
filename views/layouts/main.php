@@ -10,9 +10,12 @@ use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
 
 $assets = AppAsset::register($this);
+$assets->js[] = '/js/knockout-3.4.2.js';
 $assets->js[] = '/js/custom_fn.js';
 $assets->js[] = '/js/main.js';
+$assets->js[] = 'https://api.trello.com/1/client.js?key=4750260007210082bd12c32527e76008';
 $assets->css[] = '/css/project.css';
+$assets->jsOptions = ['position' => \yii\web\View::POS_END];
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -22,8 +25,8 @@ $assets->css[] = '/css/project.css';
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?= Html::csrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
-    <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
-    <script src="https://api.trello.com/1/client.js?key=4750260007210082bd12c32527e76008"></script>
+    <!--<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>-->
+    <script src=""></script>
     <script src="/js/knockout-3.4.2.js"></script>
     <?php $this->head() ?>
 </head>

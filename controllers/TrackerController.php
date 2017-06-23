@@ -34,7 +34,7 @@ class TrackerController extends Controller
                         'verbs' => ['POST'],
                     ],
                     [
-                        'actions' => ['trello-api', 'auth-trello'],
+                        'actions' => ['trello-api', 'auth-trello', 'instart', 'save-time-trello'],
                         'allow' => true,
                     ]
                 ],
@@ -63,12 +63,29 @@ class TrackerController extends Controller
 
     public function beforeAction($action) {
         $excepts = [
-            'auth-trello'
+            'auth-trello', 'instart', 'save-time-trello'
         ];
-        if(in_array($action->id, $excepts)) {
+        if (in_array($action->id, $excepts)) {
             Yii::$app->request->enableCsrfValidation = false;
         }
         return parent::beforeAction($action);
+    }
+
+    public function actionInstart($uid)
+    {
+        $model = MemberToken::find()
+            ->where(['member_id' => $uid])
+            ->one();
+
+        $content = $model ?
+            $this->renderAjax('instart/_estimation_fields') :
+            $this->renderAjax('instart/_auth_in_tracker') ;
+
+        echo json_encode([
+            'status' => 'ok',
+            'content' => $content,
+        ]);
+        exit;
     }
 
     public function actionAuthTrello()
@@ -98,26 +115,40 @@ class TrackerController extends Controller
 
     public function actionSaveTime()
     {
-        $boardId = Yii::$app->request->post('boardId');
-        $listId = Yii::$app->request->post('listId');
-        $cardId = Yii::$app->request->post('cardId');
-        $time = Yii::$app->request->post('time');
+        $this->runAction('save-time-trello', [
+            Yii::$app->request->post('boardId', ''),
+            Yii::$app->request->post('listId', ''),
+            Yii::$app->request->post('cardId', ''),
+            Yii::$app->request->post('time', 0)
+        ]);
+    }
 
+    public function actionSaveTimeTrello($b, $l, $c, $t)
+    {
+        var_dump($b, $l, $c);
         $model = TrackTime::find()->where([
-            'board_id' => $boardId,
-            'list_id' => $listId,
-            'card_id' => $cardId
+            'board_id' => $b,
+            'list_id' => $l,
+            'card_id' => $c
         ])->one();
 
         if (!$model) {
             $model = new TrackTime();
         }
-        $model->board_id = $boardId;
-        $model->list_id = $listId;
-        $model->card_id = $cardId;
-        $model->time = $time;
+        $model->board_id = $b;
+        $model->list_id = $l;
+        $model->card_id = $c;
+        $model->time = $t;
 
-        return $model->save() ? 'success' : 'error';
+        if ($model->save()) {
+            $model = MemberToken::find()
+                ->where(['member_id' => '52f09d4ae328343312cc77e8'])
+                ->one();
+            $token = $model->token;
+            $client = new Client();
+            $client->authenticate(Yii::$app->params['trello_api_key'], $token, Client::AUTH_URL_CLIENT_ID);
+            $member = $client->api('card')->actions()->addComment($c, '\@time_tracker estimated '.$t.' seconds');
+        }
     }
 
     public function actionGetTimeTrack()

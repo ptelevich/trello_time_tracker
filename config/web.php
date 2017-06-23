@@ -42,6 +42,7 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                '<controller>/<action>/<uid:\S+>' => 'tracker/instart',
             ],
         ],
     ],

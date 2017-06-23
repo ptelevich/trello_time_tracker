@@ -52,7 +52,7 @@ var koContent = function()
             });
             //Trello.post('/cards/5883593e269689bc677d5902/actions/comments', {text: '@trello_tracker comment1'});
         }
-    }();
+    };
 
     private.resetBlocks = function()
     {
