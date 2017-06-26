@@ -1,28 +1,9 @@
 var TrelloTracker = function()
 {
-    const APP_ROOTS_URL = 'https://trello.personal.loc';
-    const TRELLO_URL = 'https://trello.com/1';
     var public = this;
-    var private = {
-        appConf: {
-            key: '4750260007210082bd12c32527e76008',
-            name: 'Tracker_Time_v2',
-            response_type: 'token',
-            expiration: 'never',
-            return_url: APP_ROOTS_URL + '/tracker/auth-trello',
-            windowSize: 'width=500,height=500'
-        }
-    };
+    public.appRootUrl = 'https://trello.personal.loc';
 
-    public.appRootUrl = function()
-    {
-        return APP_ROOTS_URL;
-    };
-
-    public.trelloUrl = function()
-    {
-        return TRELLO_URL;
-    };
+    var private = {};
 
     public.inStart = function(content)
     {
@@ -31,24 +12,19 @@ var TrelloTracker = function()
             $(html).insertAfter('.add-comment-section');
         }
         $('#ttEstimation').html(content);
-
-        $('.ttOpenIFrame').on('click', function(){
-            var params = '';
-            params += 'key='+private.appConf.key;
-            params += '&name='+private.appConf.name;
-            params += '&scope=read,write,account';
-            params += '&response_type='+private.appConf.response_type;
-            params += '&expiration='+private.appConf.expiration;
-            params += '&return_url='+private.appConf.return_url;
-            var trello_connect = window.open(TRELLO_URL + "/connect?"+params, "authTrelloWindow", private.appConf.windowSize);
-        });
     };
 
 
     return public;
 };
 
-var getHTML = function ( url, callback ) {
+var getHTML = function ( method, baseUrl, params, callback ) {
+
+    var encodeData = function (data) {
+        return Object.keys(data).map(function(key) {
+            return [key, data[key]].map(encodeURIComponent).join("=");
+        }).join("&");
+    };
 
     // Feature detection
     if ( !window.XMLHttpRequest ) return;
@@ -63,8 +39,13 @@ var getHTML = function ( url, callback ) {
         }
     };
 
+    if (params) {
+        baseUrl += '?';
+        baseUrl += encodeData(params);
+    }
+
     // Get the HTML
-    xhr.open( 'GET', url );
+    xhr.open( method, baseUrl );
     xhr.responseType = 'json';
     xhr.send();
 };
@@ -73,22 +54,14 @@ var sendEstimation = function(estimation) {
     var trackerClass = new TrelloTracker();
     var findCardId = window.location.href.match(/(trello\.com\/c\/)(.+?)(\/)/);
     if (findCardId[2]) {
-        console.log(findCardId[2]);
-        getHTML(trackerClass.trelloUrl() + '/cards/'+findCardId[2], function (data) {
-            function encodeData(data) {
-                return Object.keys(data).map(function(key) {
-                    return [key, data[key]].map(encodeURIComponent).join("=");
-                }).join("&");
-            }
-            var data = {
+        getHTML('GET', '/1/cards/'+findCardId[2], null, function (data) {
+            var params = {
                 b: data.idBoard,
                 l: data.idList,
                 c: data.id,
-                t: estimation,
+                t: estimation
             };
-            var querystring = encodeData(data);
-            console.log(querystring);
-            getHTML(trackerClass.appRootUrl() + '/tracker/save-time-trello/?'+encodeData(data), function (data) {});
+            getHTML('GET', trackerClass.appRootUrl + '/tracker/save-time-trello/', params);
         });
     }
 };
@@ -97,17 +70,16 @@ $(function(){
     var trackerClass = new TrelloTracker();
     var def1 = $.Deferred();
 
-    getHTML(trackerClass.trelloUrl() + '/members/me', function (data) {
+    getHTML('GET', '/1/members/me', null, function (data) {
         var userId = data.id;
         def1.resolve(userId);
     });
 
     def1.done(function(userId) {
-        getHTML(trackerClass.appRootUrl() + '/tracker/instart/'+userId, function (data) {
+        var params = {uid: userId};
+        getHTML('GET', trackerClass.appRootUrl + '/tracker/instart/', params, function (data) {
             if (data.status == 'ok') {
                 trackerClass.inStart(data.content);
-            } else {
-
             }
         });
     });

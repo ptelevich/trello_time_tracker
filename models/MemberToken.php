@@ -3,7 +3,6 @@
 namespace app\models;
 
 use app\traits\CommonModel;
-use app\traits\TrackerModel;
 use Yii;
 
 /**
@@ -35,6 +34,7 @@ class MemberToken extends \yii\db\ActiveRecord
             [['member_id', 'token'], 'required'],
             [['created_at', 'updated_at'], 'safe'],
             [['member_id', 'token'], 'string', 'max' => 100],
+            [['member_id'], 'unique'],
         ];
     }
 

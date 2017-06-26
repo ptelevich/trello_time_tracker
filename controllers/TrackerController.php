@@ -93,7 +93,7 @@ class TrackerController extends Controller
         $token = Yii::$app->request->post('token', null);
 
         if (!Yii::$app->request->isAjax && !$token) {
-            return $this->render('auth');
+            return $this->renderPartial('auth');
         }
 
         $client = new Client();
