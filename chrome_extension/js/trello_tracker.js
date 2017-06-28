@@ -4,8 +4,19 @@ var TrelloTracker = function()
     public.appRootUrl = 'https://trello.personal.loc';
 
     var private = {};
+    private.me = '';
 
-    public.inStart = function(content)
+    public.setMeid = function(id)
+    {
+        private.me = id;
+    };
+
+    public.getMeid = function()
+    {
+        return private.me;
+    };
+
+    public.setContent = function(content)
     {
         if (!$('#ttEstimation').length) {
             var html = '<div id="ttEstimation"></div>';
@@ -17,6 +28,8 @@ var TrelloTracker = function()
 
     return public;
 };
+
+var trackerClass = new TrelloTracker();
 
 var getHTML = function ( method, baseUrl, params, callback ) {
 
@@ -50,37 +63,26 @@ var getHTML = function ( method, baseUrl, params, callback ) {
     xhr.send();
 };
 
-var sendEstimation = function(estimation) {
-    var trackerClass = new TrelloTracker();
-    var findCardId = window.location.href.match(/(trello\.com\/c\/)(.+?)(\/)/);
-    if (findCardId[2]) {
-        getHTML('GET', '/1/cards/'+findCardId[2], null, function (data) {
-            var params = {
-                b: data.idBoard,
-                l: data.idList,
-                c: data.id,
-                t: estimation
-            };
-            getHTML('GET', trackerClass.appRootUrl + '/tracker/save-time-trello/', params);
-        });
-    }
-};
-
-$(function(){
-    var trackerClass = new TrelloTracker();
+var refreshContent = function()
+{
     var def1 = $.Deferred();
 
     getHTML('GET', '/1/members/me', null, function (data) {
         var userId = data.id;
+        trackerClass.setMeid(userId);
         def1.resolve(userId);
     });
 
     def1.done(function(userId) {
         var params = {uid: userId};
-        getHTML('GET', trackerClass.appRootUrl + '/tracker/instart/', params, function (data) {
+        getHTML('GET', trackerClass.appRootUrl + '/tracker/show-content/', params, function (data) {
             if (data.status == 'ok') {
-                trackerClass.inStart(data.content);
+                trackerClass.setContent(data.content);
             }
         });
     });
+};
+
+$(function(){
+    refreshContent();
 });

@@ -19,7 +19,14 @@
         params += '&response_type='+private.appConf.response_type;
         params += '&expiration='+private.appConf.expiration;
         params += '&return_url='+private.appConf.return_url;
-        window.open("/1/connect?"+params, "authTrelloWindow", private.appConf.windowSize);
+        var connect = window.open("/1/connect?"+params, "authTrelloWindow", private.appConf.windowSize);
+        var whileLoop = setInterval(function() {
+            console.log( "тик" );
+            if (connect.closed) {
+                clearInterval(whileLoop);
+                refreshContent();
+            }
+        }, 2000);
     });
 </script>
 <button class="ttOpenIFrame">Auth in Tracker Time app</button>

@@ -34,7 +34,7 @@ class TrackerController extends Controller
                         'verbs' => ['POST'],
                     ],
                     [
-                        'actions' => ['trello-api', 'auth-trello', 'instart', 'save-time-trello'],
+                        'actions' => ['trello-api', 'auth-trello', 'show-content', 'save-time-trello'],
                         'allow' => true,
                     ]
                 ],
@@ -63,7 +63,7 @@ class TrackerController extends Controller
 
     public function beforeAction($action) {
         $excepts = [
-            'auth-trello', 'instart', 'save-time-trello'
+            'auth-trello', 'show-content', 'save-time-trello'
         ];
         if (in_array($action->id, $excepts)) {
             Yii::$app->request->enableCsrfValidation = false;
@@ -71,15 +71,15 @@ class TrackerController extends Controller
         return parent::beforeAction($action);
     }
 
-    public function actionInstart($uid)
+    public function actionShowContent($uid)
     {
         $model = MemberToken::find()
             ->where(['member_id' => $uid])
             ->one();
 
         $content = $model ?
-            $this->renderAjax('instart/_estimation_fields') :
-            $this->renderAjax('instart/_auth_in_tracker') ;
+            $this->renderAjax('_partial/_estimation_fields') :
+            $this->renderAjax('_partial/_auth_in_tracker') ;
 
         echo json_encode([
             'status' => 'ok',
@@ -123,9 +123,8 @@ class TrackerController extends Controller
         ]);
     }
 
-    public function actionSaveTimeTrello($b, $l, $c, $t)
+    public function actionSaveTimeTrello($b, $l, $c, $t, $uid)
     {
-        var_dump($b, $l, $c);
         $model = TrackTime::find()->where([
             'board_id' => $b,
             'list_id' => $l,
@@ -142,12 +141,16 @@ class TrackerController extends Controller
 
         if ($model->save()) {
             $model = MemberToken::find()
-                ->where(['member_id' => '52f09d4ae328343312cc77e8'])
+                ->where(['member_id' => $uid])
                 ->one();
             $token = $model->token;
             $client = new Client();
             $client->authenticate(Yii::$app->params['trello_api_key'], $token, Client::AUTH_URL_CLIENT_ID);
-            $member = $client->api('card')->actions()->addComment($c, '\@time_tracker estimated '.$t.' seconds');
+            $client->api('card')->actions()->addComment($c, '\@time_tracker estimated '.$t.' minutes');
+            echo json_encode([
+                'status' => 'ok',
+            ]);
+            exit;
         }
     }
 
